@@ -1,6 +1,7 @@
 <?php
 
 include('print.php');
+include('lib/display.php');
 set_time_limit(0);
 
 include('db.php');
@@ -66,14 +67,6 @@ else if (isset($_REQUEST['back'])){
 	exit;
 }
 
-$q = "SELECT typeDesc,pending,arrived,ttl 
-	FROM arrivals as a left join mealttl as t
-	ON a.typeDesc=t.name";
-$r = $db->query($q);
-$arr = array();
-while($w = $db->fetch_row($r))
-	$arr[] = $w;
-
 $cn = (int)$_REQUEST['cn'];
 
 $q = "SELECT name,guest_count,child_count,1 as paid,checked_in
@@ -93,7 +86,22 @@ while($w = $db->fetch_row($r)){
 	else
 		$kids[] = $w;
 }
+
+$meals = array();
+$q = 'SELECT id as subtype, typeDesc FROM mealtype WHERE id > 0 ORDER BY id';
+$r = $db->query($q);
+while ($w = $db->fetch_row($r)) {
+    $meals[$w['subtype']] = $w['typeDesc'];
+}
 ?>
+<!doctype html>
+<html>
+<head>
+    <title>Annual Meeting</title>
+    <link rel="stylesheet" type="text/css" href="components/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="components/bootstrap/css/bootstrap-theme.min.css">
+    <script type="text/javascript" src="components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="components/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 function reCalc(){
 	var c = document.getElementById('chicken').value;
@@ -107,11 +115,12 @@ function reCalc(){
 	document.getElementById('ttldue').value = due;
 }
 </script>
+</head>
 <body onload="document.getElementById('chicken').focus();">
-<div>
-	<div style="float:left;width:60%;">
+<div class="container">
 	<form method="post" action="edit.php">
-	<table>
+	<div class="col-sm-6">
+	<table class="table">
 	<?php if ($regW['checked_in'] != 0){ 
 		echo '<tr><th colspan="2" style="color:red;">ALREADY CHECKED IN</th></tr>';
 	} ?>
@@ -121,46 +130,51 @@ function reCalc(){
 	<tr><th>Children</th><td><?php echo $regW['child_count']; ?></td></tr>
 	<tr><td colspan="2" align="center">Registered Meals</td></tr>
 	<?php foreach ($adult as $a){
-	echo '<tr><th>Adult Meal</th><td><select name="am[]">';
-	if ($a[1]==1) 
-		echo '<option value="1" selected>Steak</option><option value="2">Risotto</option><option value="3">Squash</option>';
-	elseif ($a[1] == 2)
-		echo '<option value="1">Steak</option><option value="2" selected>Risotto</option><option value="3">Squash</option>';
-	else
-		echo '<option value="1">Steak</option><option value="2">Risotto</option><option value="3" selected>Squash</option>';
+	echo '<tr><th>Adult Meal</th><td><select name="am[]" class="form-control">';
+    foreach ($meals as $id => $name) {
+        printf('<option %s value="%d">%s</option>',
+            ($a[1] == $id ? 'selected' : ''), $id, $name);
+    }
 	echo '</select></td></tr>';
 	} ?>
 	<?php foreach ($kids as $k){
-	echo '<tr><th>Child Meal</th><td><select name="km[]">';
+	echo '<tr><th>Child Meal</th><td><select name="km[]" class="form-control">';
 	echo '<option value="1" selected>Spaghetti</option><option value="0">None</option>';
 	echo '</select></td></tr>';
 	} ?>
 	<tr><td colspan="2" align="center">Additional Meals</td></tr>
-	<tr><th>Steak</th><td><input type="text" name="chicken" id="chicken" value="0" onchange="reCalc(); "/></td></tr>
-	<tr><th>Risotto</th><td><input type="text" name="veg" id="veg" onchange="reCalc();" value="0" /></td></tr>
-	<tr><th>Squash</th><td><input type="text" name="vegan" id="vegan" onchange="reCalc();" value="0" /></td></tr>
-	<tr><th>Spaghetti</th><td><input type="text" name="kids" id="kids" onchange="reCalc();" value="0" /></td></tr>
-	<tr><td colspan="2">&nbsp;</td></tr>
+	<tr><th><?php echo $meals[1]; ?></th>
+        <td><input type="text" class="form-control" name="chicken" id="chicken" value="0" onchange="reCalc(); "/></td></tr>
+	<tr><th><?php echo $meals[2]; ?></th><td>
+        <input type="text" class="form-control" name="veg" id="veg" onchange="reCalc();" value="0" /></td></tr>
+	<tr><th><?php echo $meals[3]; ?></th>
+        <td><input type="text" class="form-control" name="vegan" id="vegan" onchange="reCalc();" value="0" /></td></tr>
+	<tr><th>Spaghetti</th><td>
+        <input type="text" class="form-control" name="kids" id="kids" onchange="reCalc();" value="0" /></td></tr>
 	<tr><th>Amount Due</th><td id="amtdue">$<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?></td></tr>
 	<input type="hidden" id="basedue" name="basedue" value="<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?>" />
 	<input type="hidden" id="ttldue" name="ttldue" value="<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?>" />
 	<input type="hidden" name="cn" value="<?php echo $cn; ?>" />
-	<tr><td><input type="submit" name="checkin" value="Check In" /></td>
-	<td><input type="submit" name="back" value="Go Back" /></td></tr>
 	</table>
+	</div>
+
+	<div class="col-sm-6">
+    <table class="table">
+    <tr><th>Meal</th><th>Pending</th><th>Checked-in</th></tr>
+    <?php foreach (getArrivedStatus($db) as $row) { ?>
+        <tr>
+            <td><?php echo $row['typeDesc']; ?></td>
+            <td><?php echo $row['pending']; ?></td>
+            <td><?php echo $row['arrived']; ?></td>
+        </tr>
+    <?php } ?>
+    </table>
+    <button type="submit" name="checkin" value="Check In"
+        class="btn btn-primary">Check In</button>
+    <button type="submit" name="back" value="Go Back"
+        class="btn btn-default">Go Back</button>
+	</div>
 	</form>
-	</div>
-
-	<div style="float:left;width:35%;">
-	<table cellspacing="0" cellpadding="4" border="1">
-	<tr><th>&nbsp;</th><th>Remaining</th><th>Claimed</th></tr>
-	<?php foreach($arr as $a){
-		printf('<tr><td>%s</td><td>%d</td><td>%d</td></tr>',
-			$a['typeDesc'],$a['pending'],$a['arrived']);
-	} ?>
-	</table>
-	</div>
-
-	<div style="clear:left;"></div>
 </div>
 </body>
+</html>

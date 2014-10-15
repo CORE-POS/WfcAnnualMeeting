@@ -1,0 +1,14 @@
+{
+    "name": "core-pos/wfc-annual-meeting",
+    "description": "Check-in app to print meal and drink tickets",
+    "require": {
+        "components/bootstrap": "*"
+    },
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Andy Theuninck",
+            "email": "andy@gohanman.com"
+        }
+    ]
+}

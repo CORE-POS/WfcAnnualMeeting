@@ -18,7 +18,7 @@ function print_info($INFO){
 			$dts++;
 			break;
 		case 's':
-			$receipt .= printImage("images/squashbpp.bmp");
+			$receipt .= printImage("images/polentabpp.bmp");
 			$dts++;
 			break;
 		case 'k':
