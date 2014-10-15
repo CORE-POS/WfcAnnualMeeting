@@ -49,8 +49,10 @@ function print_info($INFO){
 	}
 
 	if (!isset($INFO['amt']) || $INFO['amt'] == 0){
+        /** Disabled; all pre-pay
 		$receipt .= biggerFont(centerBig("PAID IN FULL"))."\n";
 		$receipt .= cut();
+        */
 	}
 	else {
 		$receipt .= biggerFont(centerBig(sprintf('AMOUNT DUE: $%.2f',$INFO['amt'])))."\n";

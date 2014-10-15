@@ -150,6 +150,7 @@ class Bitmap {
 			return $this->ReturnError("Load(): incomplete DIB header (file is ".$datasize." bytes)");
 		switch ($headerSize) {
 		case $this->DIB1: // OS/2 V1 "BITMAPCOREHEADER" 12 bytes
+        case $this->DIB2:
 			$width = $this->ParseInt($data, 18, 19);
 			$height = $this->ParseInt($data, 20, 21);
 			$colorPlanes = $this->ParseInt($data, 22, 23);
@@ -165,6 +166,8 @@ class Bitmap {
 			break;
 			
 		case $this->DIB3: // Windows V3 "BITMAPINFOHEADER" 40 bytes
+        case $this->DIB4:
+        case $this->DIB5:
 			$width = $this->ParseInt($data, 18, 21, true);
 			$height = $this->ParseInt($data, 22, 25, true);
 			$colorPlanes = $this->ParseInt($data, 26, 27);
