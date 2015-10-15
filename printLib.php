@@ -30,42 +30,42 @@ define('PRINTER_OUT_PORT','LPT1:');
 // --------------------------------------------------------------
 function build_time($timestamp) {
 
-	return strftime("%m/%d/%y %I:%M %p", $timestamp);
+    return strftime("%m/%d/%y %I:%M %p", $timestamp);
 }
 // --------------------------------------------------------------
 function centerString($text) {
 
-		return center($text, 59);
+        return center($text, 59);
 }
 // --------------------------------------------------------------
 function writeLine($text) {
-	$fp = fopen(PRINTER_OUT_PORT, "w");
-	fwrite($fp, $text);
-	fclose($fp);
+    $fp = fopen(PRINTER_OUT_PORT, "w");
+    fwrite($fp, $text);
+    fclose($fp);
 }
 // --------------------------------------------------------------
 
 function center($text, $linewidth) {
-	$blank = str_repeat(" ", 59);
-	$text = trim($text);
-	$lead = (int) (($linewidth - strlen($text)) / 2);
-	$newline = substr($blank, 0, $lead).$text;
-	return $newline;
+    $blank = str_repeat(" ", 59);
+    $text = trim($text);
+    $lead = (int) (($linewidth - strlen($text)) / 2);
+    $newline = substr($blank, 0, $lead).$text;
+    return $newline;
 }
 // -------------------------------------------------------------
 function drawerKick() {
 
-		writeLine(chr(27).chr(112).chr(0).chr(48)."0");
+        writeLine(chr(27).chr(112).chr(0).chr(48)."0");
 }
 
 // -------------------------------------------------------------
 function printImage($image_fn) {
-	$receipt = ""
-		.chr(27).chr(33).chr(5);
-	$img = RenderBitmapFromFile($image_fn);
-	$receipt .= $img."\n";
-		
-	return $receipt;
+    $receipt = ""
+        .chr(27).chr(33).chr(5);
+    $img = RenderBitmapFromFile($image_fn);
+    $receipt .= $img."\n";
+        
+    return $receipt;
 
 }
 // -------------------------------------------------------------
@@ -75,74 +75,74 @@ function promoMsg() {
 
 /***** jqh 09/29/05 functions added for new receipt *****/
 function biggerFont($str) {
-	$receipt=chr(29).chr(33).chr(17);
-	$receipt.=$str;
-	$receipt.=chr(29).chr(33).chr(00);
+    $receipt=chr(29).chr(33).chr(17);
+    $receipt.=$str;
+    $receipt.=chr(29).chr(33).chr(00);
 
-	return $receipt;
+    return $receipt;
 }
 function centerBig($text) {
-	$blank = str_repeat(" ", 30);
-	$text = trim($text);
-	$lead = (int) ((30 - strlen($text)) / 2);
-	$newline = substr($blank, 0, $lead).$text;
-	return $newline;
+    $blank = str_repeat(" ", 30);
+    $text = trim($text);
+    $lead = (int) ((30 - strlen($text)) / 2);
+    $newline = substr($blank, 0, $lead).$text;
+    return $newline;
 }
 /***** jqh end change *****/
 
 function normalFont() {
-	return chr(27).chr(33).chr(5);
+    return chr(27).chr(33).chr(5);
 }
 function boldFont() {
-	return chr(27).chr(33).chr(9);
+    return chr(27).chr(33).chr(9);
 }
 
 function cut(){
-	$receipt = str_repeat("\n", 8);
-	$receipt .= chr(27).chr(105);
-	return $receipt;
+    $receipt = str_repeat("\n", 8);
+    $receipt .= chr(27).chr(105);
+    return $receipt;
 }
 
 function twoColumns($col1, $col2) {
-	// init
-	$max = 56;
-	$text = "";
-	// find longest string in each column, ignoring font change strings
-	$c1max = 0;
-	$col1s = array();
-	foreach( $col1 as $c1) {
-		$c1s = trim(str_replace(array(boldFont(),normalFont()), "", $c1));
-		$col1s[] = $c1s;
-		$c1max = max($c1max, strlen($c1s));
-	}
-	$c2max = 0;
-	$col2s = array();
-	foreach( $col2 as $c2) {
-		$c2s = trim(str_replace(array(boldFont(),normalFont()), "", $c2));
-		$col2s[] = $c2s;
-		$c2max = max($c2max, strlen($c2s));
-	}
-	// space the columns as much as they'll fit
-	$spacer = $max - $c1max - $c2max;
-	// scan both columns
-	for( $x=0; isset($col1[$x]) && isset($col2[$x]); $x++) {
-		$c1 = trim($col1[$x]);  $c1l = strlen($col1s[$x]);
-		$c2 = trim($col2[$x]);  $c2l = strlen($col2s[$x]);
-		if( ($c1max+$spacer+$c2l) <= $max) {
-			$text .= $c1 . @str_repeat(" ", ($c1max+$spacer)-$c1l) . $c2 . "\n";
-		} else {
-			$text .= $c1 . "\n" . str_repeat(" ", $c1max+$spacer) . $c2 . "\n";
-		}
-	}
-	// if one column is longer than the other, print the extras
-	// (only one of these should happen since the loop above runs as long as both columns still have rows)
-	for( $y=$x; isset($col1[$y]); $y++) {
-		$text .= trim($col1[$y]) . "\n";
-	} // col1 extras
-	for( $y=$x; isset($col2[$y]); $y++) {
-		$text .= str_repeat(" ", $c1max+$spacer) . trim($col2[$y]) . "\n";
-	} // col2 extras
-	return $text;
+    // init
+    $max = 56;
+    $text = "";
+    // find longest string in each column, ignoring font change strings
+    $c1max = 0;
+    $col1s = array();
+    foreach( $col1 as $c1) {
+        $c1s = trim(str_replace(array(boldFont(),normalFont()), "", $c1));
+        $col1s[] = $c1s;
+        $c1max = max($c1max, strlen($c1s));
+    }
+    $c2max = 0;
+    $col2s = array();
+    foreach( $col2 as $c2) {
+        $c2s = trim(str_replace(array(boldFont(),normalFont()), "", $c2));
+        $col2s[] = $c2s;
+        $c2max = max($c2max, strlen($c2s));
+    }
+    // space the columns as much as they'll fit
+    $spacer = $max - $c1max - $c2max;
+    // scan both columns
+    for( $x=0; isset($col1[$x]) && isset($col2[$x]); $x++) {
+        $c1 = trim($col1[$x]);  $c1l = strlen($col1s[$x]);
+        $c2 = trim($col2[$x]);  $c2l = strlen($col2s[$x]);
+        if( ($c1max+$spacer+$c2l) <= $max) {
+            $text .= $c1 . @str_repeat(" ", ($c1max+$spacer)-$c1l) . $c2 . "\n";
+        } else {
+            $text .= $c1 . "\n" . str_repeat(" ", $c1max+$spacer) . $c2 . "\n";
+        }
+    }
+    // if one column is longer than the other, print the extras
+    // (only one of these should happen since the loop above runs as long as both columns still have rows)
+    for( $y=$x; isset($col1[$y]); $y++) {
+        $text .= trim($col1[$y]) . "\n";
+    } // col1 extras
+    for( $y=$x; isset($col2[$y]); $y++) {
+        $text .= str_repeat(" ", $c1max+$spacer) . trim($col2[$y]) . "\n";
+    } // col2 extras
+    return $text;
 }
 
 ?>

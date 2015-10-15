@@ -7,48 +7,48 @@ ini_set('display_errors','on');
 set_time_limit(0);
 $dbc = db();
 if (isset($_REQUEST['cn'])) {
-	$cn = $_REQUEST['cn'];
-	$found = false;
-	$db = $dbc;
+    $cn = $_REQUEST['cn'];
+    $found = false;
+    $db = $dbc;
     $json = array('member' => false, 'html' => '');
-	if (is_numeric($cn)) {
-		$q = sprintf("SELECT CardNo FROM custdata
-			WHERE CardNo=%d",$cn);
-		$r = $db->query($q);
-		if ($db->num_rows($r) > 0) {
+    if (is_numeric($cn)) {
+        $q = sprintf("SELECT CardNo FROM custdata
+            WHERE CardNo=%d",$cn);
+        $r = $db->query($q);
+        if ($db->num_rows($r) > 0) {
             $json['member'] = sprintf('%d', $cn);
-		} else {
-			$q2 = sprintf("SELECT card_no FROM
-				membercards WHERE upc='%s'",
-				str_pad($cn,13,'0',STR_PAD_LEFT));
-			$r2 = $db->query($q2);
-			if ($db->num_rows($r2) > 0) {
-				$row = $db->fetch_row($r2);
+        } else {
+            $q2 = sprintf("SELECT card_no FROM
+                membercards WHERE upc='%s'",
+                str_pad($cn,13,'0',STR_PAD_LEFT));
+            $r2 = $db->query($q2);
+            if ($db->num_rows($r2) > 0) {
+                $row = $db->fetch_row($r2);
                 $json['member'] = $row['card_no'];
             }
-		}
-	} else {
-		$q = sprintf("SELECT CardNo,
+        }
+    } else {
+        $q = sprintf("SELECT CardNo,
                 LastName,
                 FirstName,
                 personNum,
                 CASE WHEN r.card_no IS NULL THEN 'z alert-danger' 
                     WHEN r.card_no IS NOT NULL AND personNum=1 THEN 'a alert-success' 
                     ELSE 'b alert-warning' END AS css
-			FROM custdata AS c
+            FROM custdata AS c
                 LEFT JOIN registrations AS r ON c.CardNo=r.card_no
             WHERE LastName LIKE '%s%%'
-			ORDER BY css, LastName,FirstName",
-			$db->escape($cn));
-		$r = $db->query($q);
-		if ($db->num_rows($r) > 0) {
-			$found = true;
+            ORDER BY css, LastName,FirstName",
+            $db->escape($cn));
+        $r = $db->query($q);
+        if ($db->num_rows($r) > 0) {
+            $found = true;
             ob_start();
             ?>
-		    <form onsubmit="location='edit.php?cn='+$('#cn-select').val(); return false;"
+            <form onsubmit="location='edit.php?cn='+$('#cn-select').val(); return false;"
                 class="form-inline">
             <label>Multiple Matches</label>
-		    <select id="cn-select" class="form-control">
+            <select id="cn-select" class="form-control">
             <?php while($w = $db->fetch_row($r)) {
                 if ($w['personNum'] == 1) {
                     echo '<strong>';
@@ -60,16 +60,16 @@ if (isset($_REQUEST['cn'])) {
                 if ($w['personNum'] == 1) {
                     echo '</strong>';
                 }
-		    } ?>
-		    </select>
+            } ?>
+            </select>
             <button type="submit" class="btn btn-default">Proceed</button>
-		    </form>
-		    <?php
+            </form>
+            <?php
             $json['html'] = ob_get_clean();
-		} else {
+        } else {
             $json['html'] = $q;
         }
-	}
+    }
     if ($json['member'] === false && $json['html'] === '') {
         $json['html'] = '<div class="alert alert-danger">No owner found</div>';
     }
