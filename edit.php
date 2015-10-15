@@ -98,10 +98,10 @@ while ($w = $db->fetch_row($r)) {
 <html>
 <head>
     <title>Annual Meeting</title>
-    <link rel="stylesheet" type="text/css" href="components/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="components/bootstrap/css/bootstrap-theme.min.css">
-    <script type="text/javascript" src="components/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="components/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="vendor/components/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/components/bootstrap/css/bootstrap-theme.min.css">
+    <script type="text/javascript" src="vendor/components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/components/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 function reCalc(){
 	var c = document.getElementById('chicken').value;
