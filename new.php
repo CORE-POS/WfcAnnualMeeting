@@ -3,7 +3,7 @@
 include('print.php');
 set_time_limit(0);
 
-include('db.php');
+include('lib/db.php');
 $db = db();
 
 if (isset($_REQUEST['checkin'])){

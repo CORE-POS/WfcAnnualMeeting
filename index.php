@@ -1,6 +1,6 @@
 <?php
 include('print.php');
-include('db.php');
+include('lib/db.php');
 include('lib/display.php');
 
 ini_set('display_errors','on');

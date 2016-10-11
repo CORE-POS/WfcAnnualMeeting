@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists("printImage")) include_once('printLib.php');
+if (!function_exists("printImage")) include_once('lib/printLib.php');
 
 function print_info($INFO){
     //return;
@@ -66,4 +66,3 @@ function print_info($INFO){
     writeLine($receipt);
 }
 
-?>
