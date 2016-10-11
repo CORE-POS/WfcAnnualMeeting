@@ -113,7 +113,7 @@ CREATE TABLE `mealtype` (
 
 LOCK TABLES `mealtype` WRITE;
 /*!40000 ALTER TABLE `mealtype` DISABLE KEYS */;
-INSERT INTO `mealtype` VALUES (0,'Child Spaghetti'),(1,'Steak'),(2,'Risotto'),(3,'Squash');
+INSERT INTO `mealtype` VALUES (0,'Child Spaghetti'),(1,'Pork'),(2,'Ratatouille'),(3,'Pork G/F'),(4,'Ratatouille G/F');
 /*!40000 ALTER TABLE `mealtype` ENABLE KEYS */;
 UNLOCK TABLES;
 

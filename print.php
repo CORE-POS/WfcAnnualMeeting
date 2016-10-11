@@ -17,8 +17,12 @@ function print_info($INFO){
             $receipt .= printImage("images/vegbpp.bmp");
             $dts++;
             break;
-        case 's':
-            $receipt .= printImage("images/polentabpp.bmp");
+        case 'n':
+            $receipt .= printImage("images/meatgf.bmp");
+            $dts++;
+            break;
+        case 'w':
+            $receipt .= printImage("images/veggf.bmp");
             $dts++;
             break;
         case 'k':

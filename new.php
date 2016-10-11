@@ -25,8 +25,10 @@ if (isset($_REQUEST['checkin'])){
 			$pinfo['meals'][] = 'meat';
 		elseif($_REQUEST['am'][$i] == 2)
 			$pinfo['meals'][] = 'veg';
-		else
-			$pinfo['meals'][] = 'squash';
+        elseif ($_REQUEST['am'][$i] == 3)
+            $pinfo['meals'][] = 'nmeat';
+        else
+            $pinfo['meals'][] = 'wveg';
 	}
 
 	for($i=0;$i<$_REQUEST['chicken'];$i++){
@@ -39,11 +41,16 @@ if (isset($_REQUEST['checkin'])){
 		$r = $db->query($q);
 		$pinfo['meals'][] = 'veg';
 	}
-	for($i=0;$i<$_REQUEST['vegan'];$i++){
-		$q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
-		$r = $db->query($q);
-		$pinfo['meals'][] = 'squash';
-	}
+    for($i=0;$i<$_REQUEST['mgf'];$i++){
+        $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
+        $r = $db->query($q);
+        $pinfo['meals'][] = 'nmeat';
+    }
+    for($i=0;$i<$_REQUEST['vgf'];$i++){
+        $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
+        $r = $db->query($q);
+        $pinfo['meals'][] = 'wveg';
+    }
 	for($i=0;$i<$_REQUEST['kids'];$i++){
 		$q = "INSERT INtO regMeals VALUES ($cn,'CHILD',0)";
 		$r = $db->query($q);
@@ -81,11 +88,12 @@ $regW['name'] = $regW['FirstName'].' '.$regW['LastName'];
 function reCalc(){
 	var c = document.getElementById('chicken').value;
 	var v = document.getElementById('veg').value;
-	var g = document.getElementById('vegan').value;
+	var g = document.getElementById('mgf').value;
+	var w = document.getElementById('vgf').value;
 	var k = document.getElementById('kis').value;
 	var b = document.getElementById('basedue').value;
 
-	var due = (c*20) + (v*20) + (g*20) + (k*5) + (1*b);
+	var due = (c*20) + (v*20) + (g*20) + (w*20) + (k*5) + (1*b);
 	document.getElementById('amtdue').innerHTML='$'+due;
 	document.getElementById('ttldue').value= due;
 }
@@ -102,9 +110,10 @@ function reCalc(){
 	<option value="1" selected>Steak</option><option value="2">Risotto</option><option value="3">Squash</option>
 	</select></td></tr>
 	<tr><td colspan="2" align="center">Additional Meals</td></tr>
-	<tr><th>Steak</th><td><input type="text" name="chicken" id="chicken" value="0" onchange="reCalc(); "/></td></tr>
-	<tr><th>Risotto</th><td><input type="text" name="veg" id="veg" onchange="reCalc();" value="0" /></td></tr>
-	<tr><th>Squash</th><td><input type="text" name="vegan" id="vegan" onchange="reCalc();" value="0" /></td></tr>
+	<tr><th>Pork</th><td><input type="text" name="chicken" id="chicken" value="0" onchange="reCalc(); "/></td></tr>
+	<tr><th>Ratatouille</th><td><input type="text" name="veg" id="veg" onchange="reCalc();" value="0" /></td></tr>
+	<tr><th>Pork (G/F)</th><td><input type="text" name="mgf" id="mgf" onchange="reCalc();" value="0" /></td></tr>
+	<tr><th>Ratatouille (G/F)</th><td><input type="text" name="vgf" id="vgf" onchange="reCalc();" value="0" /></td></tr>
 	<tr><th>Spaghetti</th><td><input type="text" name="kids" id="kids" onchange="reCalc();" value="0" /></td></tr>
 	<tr><td colspan="2">&nbsp;</td></tr>
 	<tr><th>Amount Due</th><td id="amtdue">$0</td></tr>

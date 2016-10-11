@@ -25,8 +25,10 @@ if (isset($_REQUEST['checkin'])){
             $pinfo['meals'][] = 'meat';
         elseif($_REQUEST['am'][$i] == 2)
             $pinfo['meals'][] = 'veg';
+        elseif ($_REQUEST['am'][$i] == 3)
+            $pinfo['meals'][] = 'nmeat';
         else
-            $pinfo['meals'][] = 'squash';
+            $pinfo['meals'][] = 'wveg';
     }
     if (isset($_REQUEST['km'])){
         foreach($_REQUEST['km'] as $km){
@@ -46,10 +48,15 @@ if (isset($_REQUEST['checkin'])){
         $r = $db->query($q);
         $pinfo['meals'][] = 'veg';
     }
-    for($i=0;$i<$_REQUEST['vegan'];$i++){
+    for($i=0;$i<$_REQUEST['mgf'];$i++){
         $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
         $r = $db->query($q);
-        $pinfo['meals'][] = 'squash';
+        $pinfo['meals'][] = 'nmeat';
+    }
+    for($i=0;$i<$_REQUEST['vgf'];$i++){
+        $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
+        $r = $db->query($q);
+        $pinfo['meals'][] = 'wveg';
     }
     for($i=0;$i<$_REQUEST['kids'];$i++){
         $q = "INSERT INtO regmeals VALUES ($cn,'CHILD',0)";
@@ -106,11 +113,12 @@ while ($w = $db->fetch_row($r)) {
 function reCalc(){
     var c = document.getElementById('chicken').value;
     var v = document.getElementById('veg').value;
-    var g = document.getElementById('vegan').value;
+    var g = document.getElementById('mgf').value;
+	var w = document.getElementById('vgf').value;
     var b = document.getElementById('basedue').value;
     var k = document.getElementById('kis').value;
 
-    var due = (c*20) + (v*20) + (g*20) + (k*5) + (1*b);
+	var due = (c*20) + (v*20) + (g*20) + (w*20) + (k*5) + (1*b);
     document.getElementById('amtdue').innerHTML='$'+due;
     document.getElementById('ttldue').value = due;
 }
@@ -148,7 +156,9 @@ function reCalc(){
     <tr><th><?php echo $meals[2]; ?></th><td>
         <input type="text" class="form-control" name="veg" id="veg" onchange="reCalc();" value="0" /></td></tr>
     <tr><th><?php echo $meals[3]; ?></th>
-        <td><input type="text" class="form-control" name="vegan" id="vegan" onchange="reCalc();" value="0" /></td></tr>
+        <td><input type="text" class="form-control" name="mgf" id="mgf" onchange="reCalc();" value="0" /></td></tr>
+    <tr><th><?php echo $meals[4]; ?></th>
+        <td><input type="text" class="form-control" name="vgf" id="vgf" onchange="reCalc();" value="0" /></td></tr>
     <tr><th>Spaghetti</th><td>
         <input type="text" class="form-control" name="kids" id="kids" onchange="reCalc();" value="0" /></td></tr>
     <tr><th>Amount Due</th><td id="amtdue">$<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?></td></tr>
