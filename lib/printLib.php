@@ -21,8 +21,8 @@
 
 *********************************************************************************/
 
-if (!class_exists("ESCPOSPrintHandler")) include_once(__DIR__ . "/../PrintHandlers/ESCPOSPrintHandler.class.php");
-if (!class_exists("Bitmap")) include_once(__DIR__ . "/Bitmap4.class.php");
+if (!class_exists("ESCPOSPrintHandler")) include_once(__DIR__ . "/ESCPOSPrintHandler.php");
+if (!class_exists("Bitmap")) include_once(__DIR__ . "/Bitmap.php");
 define('PRINTER_OUT_PORT','LPT1:');
 //define('PRINTER_OUT_PORT','fake-receipt.txt');
 

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "582c42a546150ff583a191268d80599f",
-    "content-hash": "513aab5de264425012426eed5f59e705",
+    "hash": "746b73f6da24f5f592fb93015fd61297",
+    "content-hash": "c3814f50852d03d8a1c818c2c92d2a46",
     "packages": [
         {
             "name": "components/bootstrap",
@@ -120,6 +120,36 @@
             "description": "jQuery JavaScript Library",
             "homepage": "http://jquery.com",
             "time": "2014-07-02 11:52:43"
+        },
+        {
+            "name": "corepos/common-bundle",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CORE-POS/Common-Bundle.git",
+                "reference": "83fea0f0fbccaeacacf091ba3dba7f8ea80d1376"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CORE-POS/Common-Bundle/zipball/83fea0f0fbccaeacacf091ba3dba7f8ea80d1376",
+                "reference": "83fea0f0fbccaeacacf091ba3dba7f8ea80d1376",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "COREPOS\\common\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPLv2"
+            ],
+            "description": "Common libraries for CORE-POS",
+            "time": "2016-09-27 16:03:10"
         },
         {
             "name": "kriswallsmith/assetic",

@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists("printImage")) include_once('lib/printLib.php');
+if (!function_exists("printImage")) include_once(__DIR__ . '/printLib.php');
 
 function print_info($INFO){
     //return;

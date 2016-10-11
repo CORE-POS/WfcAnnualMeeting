@@ -2,7 +2,8 @@
     "name": "core-pos/wfc-annual-meeting",
     "description": "Check-in app to print meal and drink tickets",
     "require": {
-        "components/bootstrap": "^3.3"
+        "components/bootstrap": "^3.3",
+        "corepos/common-bundle": "^2.0"
     },
     "license": "GPL",
     "authors": [

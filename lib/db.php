@@ -1,5 +1,6 @@
 <?php
-require('lib/SQLManager.php');
+
+use COREPOS\common\SQLManager;
 
 function db()
 {

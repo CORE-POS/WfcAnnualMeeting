@@ -1,5 +1,5 @@
 <?php
-include('print.php');
+include('vendor/autoload.php');
 include('lib/db.php');
 include('lib/display.php');
 
@@ -8,22 +8,20 @@ set_time_limit(0);
 $dbc = db();
 if (isset($_REQUEST['cn'])) {
     $cn = $_REQUEST['cn'];
-    $found = false;
-    $db = $dbc;
     $json = array('member' => false, 'html' => '');
     if (is_numeric($cn)) {
         $q = sprintf("SELECT CardNo FROM custdata
             WHERE CardNo=%d",$cn);
-        $r = $db->query($q);
-        if ($db->num_rows($r) > 0) {
+        $r = $dbc->query($q);
+        if ($dbc->num_rows($r) > 0) {
             $json['member'] = sprintf('%d', $cn);
         } else {
             $q2 = sprintf("SELECT card_no FROM
                 membercards WHERE upc='%s'",
                 str_pad($cn,13,'0',STR_PAD_LEFT));
-            $r2 = $db->query($q2);
-            if ($db->num_rows($r2) > 0) {
-                $row = $db->fetch_row($r2);
+            $r2 = $dbc->query($q2);
+            if ($dbc->num_rows($r2) > 0) {
+                $row = $dbc->fetch_row($r2);
                 $json['member'] = $row['card_no'];
             }
         }
@@ -39,17 +37,16 @@ if (isset($_REQUEST['cn'])) {
                 LEFT JOIN registrations AS r ON c.CardNo=r.card_no
             WHERE LastName LIKE '%s%%'
             ORDER BY css, LastName,FirstName",
-            $db->escape($cn));
-        $r = $db->query($q);
-        if ($db->num_rows($r) > 0) {
-            $found = true;
+            $dbc->escape($cn));
+        $r = $dbc->query($q);
+        if ($dbc->num_rows($r) > 0) {
             ob_start();
             ?>
             <form onsubmit="location='edit.php?cn='+$('#cn-select').val(); return false;"
                 class="form-inline">
             <label>Multiple Matches</label>
             <select id="cn-select" class="form-control">
-            <?php while($w = $db->fetch_row($r)) {
+            <?php while($w = $dbc->fetch_row($r)) {
                 if ($w['personNum'] == 1) {
                     echo '<strong>';
                 }
@@ -110,17 +107,6 @@ if (isset($_REQUEST['cn'])) {
 </head>
 <body onload="document.getElementById('cn').focus();">
 <div class="container">
-<?php
-
-/*
-$in = array();
-$in['meals'] = array('meat');
-$in['card_no'] = 10000;
-
-print_info($in);
-*/
-
-?>
 <h1>Annual Meeting Check-in</h1>
 <div class="row">
     <div class="col-sm-6">

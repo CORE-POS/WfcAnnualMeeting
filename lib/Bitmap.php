@@ -300,7 +300,7 @@ class Bitmap {
 	* OBJECT METHODS
 	*/
 	
-	function Bitmap($width=1, $height=1, $bpp=1, $dpi=72) {
+	function __construct($width=1, $height=1, $bpp=1, $dpi=72) {
 		$this->DIB1 = 12;
 		$this->DIB2 = 64;
 		$this->DIB3 = 40;

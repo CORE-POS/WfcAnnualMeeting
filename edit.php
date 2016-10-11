@@ -1,11 +1,12 @@
 <?php
 
-include('print.php');
+include('vendor/autoload.php');
+include('lib/printInfo.php');
 include('lib/display.php');
 set_time_limit(0);
 
 include('lib/db.php');
-$db = db();
+$dbc = db();
 
 if (isset($_REQUEST['checkin'])){
 
@@ -16,11 +17,11 @@ if (isset($_REQUEST['checkin'])){
     $pinfo['amt'] = $_REQUEST['ttldue'];
 
     $q = "DELETE FROM regmeals WHERE card_no=".$cn;
-    $r = $db->query($q);
+    $r = $dbc->query($q);
     for($i=0;$i<count($_REQUEST['am']);$i++){
         $q = sprintf("INSERT INTO regmeals VALUES (%d,'%s',%d)",
             $cn,($i==0?'OWNER':'GUEST'),$_REQUEST['am'][$i]);
-        $r = $db->query($q);
+        $r = $dbc->query($q);
         if ($_REQUEST['am'][$i] == 1)
             $pinfo['meals'][] = 'meat';
         elseif($_REQUEST['am'][$i] == 2)
@@ -34,42 +35,38 @@ if (isset($_REQUEST['checkin'])){
         foreach($_REQUEST['km'] as $km){
             if ($km == 0) continue;
             $q = "INSERT INTO regmeals VALUES ($cn,'CHILD',0)";
-            $r = $db->query($q);
+            $r = $dbc->query($q);
             $pinfo['meals'][] = 'kid';
         }
     }
     for($i=0;$i<$_REQUEST['chicken'];$i++){
         $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',1)";
-        $r = $db->query($q);
+        $r = $dbc->query($q);
         $pinfo['meals'][] = 'meat';
     }
     for($i=0;$i<$_REQUEST['veg'];$i++){
         $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',2)";
-        $r = $db->query($q);
+        $r = $dbc->query($q);
         $pinfo['meals'][] = 'veg';
     }
     for($i=0;$i<$_REQUEST['mgf'];$i++){
         $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
-        $r = $db->query($q);
+        $r = $dbc->query($q);
         $pinfo['meals'][] = 'nmeat';
     }
     for($i=0;$i<$_REQUEST['vgf'];$i++){
         $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
-        $r = $db->query($q);
+        $r = $dbc->query($q);
         $pinfo['meals'][] = 'wveg';
     }
     for($i=0;$i<$_REQUEST['kids'];$i++){
         $q = "INSERT INtO regmeals VALUES ($cn,'CHILD',0)";
-        $r = $db->query($q);
+        $r = $dbc->query($q);
         $pinfo['meals'][] = 'kid';
     }
     $q = "UPDATE registrations SET checked_in=1 WHERE card_no=".$cn;
-    $r = $db->query($q);
+    $r = $dbc->query($q);
     print_info($pinfo);
-    header("Location: index.php");
-    exit;
-}
-else if (isset($_REQUEST['back'])){
     header("Location: index.php");
     exit;
 }
@@ -78,16 +75,16 @@ $cn = (int)$_REQUEST['cn'];
 
 $q = "SELECT name,guest_count,child_count,1 as paid,checked_in
     FROM registrations WHERE card_no=".$cn;
-$r = $db->query($q);
-$regW = $db->fetch_row($r);
+$r = $dbc->query($q);
+$regW = $dbc->fetch_row($r);
 
 $q = "SELECT t.typeDesc,m.subtype FROM regmeals as m
     LEFT JOIN mealtype AS t ON m.subtype=t.id
     WHERE m.card_no=".$cn;
-$r = $db->query($q);
+$r = $dbc->query($q);
 $adult = array();
 $kids = array();
-while($w = $db->fetch_row($r)){
+while($w = $dbc->fetch_row($r)){
     if ($w[1] > 0)
         $adult[] = $w;
     else
@@ -96,8 +93,8 @@ while($w = $db->fetch_row($r)){
 
 $meals = array();
 $q = 'SELECT id as subtype, typeDesc FROM mealtype WHERE id > 0 ORDER BY id';
-$r = $db->query($q);
-while ($w = $db->fetch_row($r)) {
+$r = $dbc->query($q);
+while ($w = $dbc->fetch_row($r)) {
     $meals[$w['subtype']] = $w['typeDesc'];
 }
 ?>
@@ -171,7 +168,7 @@ function reCalc(){
     <div class="col-sm-6">
     <table class="table">
     <tr><th>Meal</th><th>Pending</th><th>Checked-in</th></tr>
-    <?php foreach (getArrivedStatus($db) as $row) { ?>
+    <?php foreach (getArrivedStatus($dbc) as $row) { ?>
         <tr>
             <td><?php echo $row['typeDesc']; ?></td>
             <td><?php echo $row['pending']; ?></td>
@@ -181,8 +178,7 @@ function reCalc(){
     </table>
     <button type="submit" name="checkin" value="Check In"
         class="btn btn-primary">Check In</button>
-    <button type="submit" name="back" value="Go Back"
-        class="btn btn-default">Go Back</button>
+    <a href="index.php" class="btn btn-default">Go Back</a>
     </div>
     </form>
 </div>

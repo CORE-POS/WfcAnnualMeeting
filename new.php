@@ -1,6 +1,7 @@
 <?php
 
-include('print.php');
+include('vendor/autoload.php');
+include('lib/printInfo.php');
 set_time_limit(0);
 
 include('lib/db.php');
@@ -67,14 +68,6 @@ else if (isset($_REQUEST['back'])){
 	exit;
 }
 
-$q = "SELECT typeDesc,pending,arrived,ttl 
-	FROM arrivals as a left join mealttl as t
-	ON a.typeDesc=t.name";
-$r = $db->query($q);
-$arr = array();
-while($w = $db->fetch_row($r))
-	$arr[] = $w;
-
 $cn = (int)$_REQUEST['cn'];
 
 $q = "SELECT FirstName,LastName FROM custdata
@@ -128,11 +121,14 @@ function reCalc(){
 
 	<div style="float:left;width:35%;">
 	<table cellspacing="0" cellpadding="4" border="1">
-	<tr><th>&nbsp;</th><th>Pending</th><th>Remaining</th></tr>
-	<?php foreach($arr as $a){
-		printf('<tr><td>%s</td><td>%d</td><td>%d</td></tr>',
-			$a['typeDesc'],$a['pending'],$a['arrived']);
-	} ?>
+    <tr><th>Meal</th><th>Pending</th><th>Checked-in</th></tr>
+    <?php foreach (getArrivedStatus($db) as $row) { ?>
+        <tr>
+            <td><?php echo $row['typeDesc']; ?></td>
+            <td><?php echo $row['pending']; ?></td>
+            <td><?php echo $row['arrived']; ?></td>
+        </tr>
+    <?php } ?>
 	</table>
 	</div>
 
