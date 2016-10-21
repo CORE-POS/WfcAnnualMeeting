@@ -73,7 +73,7 @@ if (isset($_REQUEST['checkin'])){
 
 $cn = (int)$_REQUEST['cn'];
 
-$q = "SELECT name,guest_count,child_count,1 as paid,checked_in
+$q = "SELECT name,guest_count,child_count,paid,checked_in
     FROM registrations WHERE card_no=".$cn;
 $r = $dbc->query($q);
 $regW = $dbc->fetch_row($r);
@@ -130,7 +130,7 @@ function reCalc(){
         echo '<tr><th colspan="2" style="color:red;">ALREADY CHECKED IN</th></tr>';
     } ?>
     <tr><th>Name</th><td><?php echo $regW['name']; ?></td></tr>
-    <tr><th>Paid</th><td><?php echo ($regW['paid']==1?'Yes':'No'); ?></td></tr>
+    <tr class="<?php echo $regW['paid'] ? '' : 'danger'; ?>"><th>Paid</th><td><?php echo ($regW['paid']==1?'Yes':'No'); ?></td></tr>
     <tr><th>Guests</th><td><?php echo $regW['guest_count']; ?></td></tr>
     <tr><th>Children</th><td><?php echo $regW['child_count']; ?></td></tr>
     <tr><td colspan="2" align="center">Registered Meals</td></tr>

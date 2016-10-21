@@ -140,7 +140,7 @@ class Bitmap {
 		default:
 			return $this->ReturnError("Load(): unknown magic numbers \"".dechex(ord($magic[0]))." ".dechex(ord($magic[1]))."\"");
 		}
-		if ($fileSize != $datasize)
+		if (false && $fileSize != $datasize)
 			return $this->ReturnError("Load(): incorrect file size (".$fileSize." reported, ".$datasize." actual)");
 		
 		// read the DIB header
