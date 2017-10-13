@@ -8,6 +8,18 @@ set_time_limit(0);
 include('lib/db.php');
 $dbc = db();
 
+/**
+  Get available meals list first. These are used throughout to avoid hardcoding
+  specific entrees so the entries should be fairly simple; mainly no spaces
+*/
+$meals = array();
+$q = 'SELECT id as subtype, typeDesc FROM mealtype WHERE id > 0 ORDER BY id';
+$r = $dbc->query($q);
+while ($w = $dbc->fetch_row($r)) {
+    $meals[$w['subtype']] = $w['typeDesc'];
+}
+$defaultMeal = current($meals);
+
 if (isset($_REQUEST['checkin'])){
 
     $cn = $_REQUEST['cn'];
@@ -16,20 +28,22 @@ if (isset($_REQUEST['checkin'])){
     $pinfo['card_no'] = $cn;
     $pinfo['amt'] = $_REQUEST['ttldue'];
 
+    /**
+      Re-enter registered adult and child meals
+      in case anything was changed during the check-in
+    */
     $q = "DELETE FROM regmeals WHERE card_no=".$cn;
     $r = $dbc->query($q);
     for($i=0;$i<count($_REQUEST['am']);$i++){
         $q = sprintf("INSERT INTO regmeals VALUES (%d,'%s',%d)",
             $cn,($i==0?'OWNER':'GUEST'),$_REQUEST['am'][$i]);
         $r = $dbc->query($q);
-        if ($_REQUEST['am'][$i] == 1)
-            $pinfo['meals'][] = 'meat';
-        elseif($_REQUEST['am'][$i] == 2)
-            $pinfo['meals'][] = 'veg';
-        elseif ($_REQUEST['am'][$i] == 3)
-            $pinfo['meals'][] = 'nmeat';
-        else
-            $pinfo['meals'][] = 'wveg';
+        $reqMeal = $_REQUEST['am'][$i];
+        if (isset($meals[$reqMeal])) {
+            $pinfo['meals'][] = strtolower($meals[$reqMeals]);
+        } else {
+            $pinfo['meals'][] = strtolower($defaultMeal);
+        }
     }
     if (isset($_REQUEST['km'])){
         foreach($_REQUEST['km'] as $km){
@@ -39,31 +53,27 @@ if (isset($_REQUEST['checkin'])){
             $pinfo['meals'][] = 'kid';
         }
     }
-    for($i=0;$i<$_REQUEST['chicken'];$i++){
-        $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',1)";
-        $r = $dbc->query($q);
-        $pinfo['meals'][] = 'meat';
-    }
-    for($i=0;$i<$_REQUEST['veg'];$i++){
-        $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',2)";
-        $r = $dbc->query($q);
-        $pinfo['meals'][] = 'veg';
-    }
-    for($i=0;$i<$_REQUEST['mgf'];$i++){
-        $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
-        $r = $dbc->query($q);
-        $pinfo['meals'][] = 'nmeat';
-    }
-    for($i=0;$i<$_REQUEST['vgf'];$i++){
-        $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',3)";
-        $r = $dbc->query($q);
-        $pinfo['meals'][] = 'wveg';
+
+    /**
+      Look for any additional meals the person registered for
+      and add them to the regMeals table
+    */
+    foreach ($meals as $m) {
+        if (isset($_REQUEST[$m])) {
+            $mealID = (int)array_search($m, $meals);
+            for ($i=0; $i<$_REQUEST[$m]; $i++) {
+                $q = "INSERT INTO regmeals VALUES ($cn,'GUEST',$mealID)";
+                $r = $dbc->query($q);
+                $pinfo['meals'][] = $m;
+            }
+        }
     }
     for($i=0;$i<$_REQUEST['kids'];$i++){
         $q = "INSERT INtO regmeals VALUES ($cn,'CHILD',0)";
         $r = $dbc->query($q);
         $pinfo['meals'][] = 'kid';
     }
+
     $q = "UPDATE registrations SET checked_in=1 WHERE card_no=".$cn;
     $r = $dbc->query($q);
     print_info($pinfo);
@@ -72,7 +82,6 @@ if (isset($_REQUEST['checkin'])){
 }
 
 $cn = (int)$_REQUEST['cn'];
-
 $q = "SELECT name,guest_count,child_count,paid,checked_in
     FROM registrations WHERE card_no=".$cn;
 $r = $dbc->query($q);
@@ -91,12 +100,6 @@ while($w = $dbc->fetch_row($r)){
         $kids[] = $w;
 }
 
-$meals = array();
-$q = 'SELECT id as subtype, typeDesc FROM mealtype WHERE id > 0 ORDER BY id';
-$r = $dbc->query($q);
-while ($w = $dbc->fetch_row($r)) {
-    $meals[$w['subtype']] = $w['typeDesc'];
-}
 ?>
 <!doctype html>
 <html>
@@ -108,20 +111,19 @@ while ($w = $dbc->fetch_row($r)) {
     <script type="text/javascript" src="vendor/components/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 function reCalc(){
-    var c = document.getElementById('chicken').value;
-    var v = document.getElementById('veg').value;
-    var g = document.getElementById('mgf').value;
-	var w = document.getElementById('vgf').value;
-    var b = document.getElementById('basedue').value;
-    var k = document.getElementById('kis').value;
+    var due = 0;
+    <?php foreach ($meals as $m) { ?>
+        due += (20 * document.getElementById('<?php echo $m; ?>').value);
+    <?php } ?>
+    due += document.getElementById('basedue').value;
+    due += (5 * document.getElementById('kis').value);
 
-	var due = (c*20) + (v*20) + (g*20) + (w*20) + (k*5) + (1*b);
     document.getElementById('amtdue').innerHTML='$'+due;
     document.getElementById('ttldue').value = due;
 }
 </script>
 </head>
-<body onload="document.getElementById('chicken').focus();">
+<body onload="document.getElementById('<?php echo $defaultMeal; ?>').focus();">
 <div class="container">
     <form method="post" action="edit.php">
     <div class="col-sm-6">
@@ -148,14 +150,10 @@ function reCalc(){
     echo '</select></td></tr>';
     } ?>
     <tr><td colspan="2" align="center">Additional Meals</td></tr>
-    <tr><th><?php echo $meals[1]; ?></th>
-        <td><input type="text" class="form-control" name="chicken" id="chicken" value="0" onchange="reCalc(); "/></td></tr>
-    <tr><th><?php echo $meals[2]; ?></th><td>
-        <input type="text" class="form-control" name="veg" id="veg" onchange="reCalc();" value="0" /></td></tr>
-    <tr><th><?php echo $meals[3]; ?></th>
-        <td><input type="text" class="form-control" name="mgf" id="mgf" onchange="reCalc();" value="0" /></td></tr>
-    <tr><th><?php echo $meals[4]; ?></th>
-        <td><input type="text" class="form-control" name="vgf" id="vgf" onchange="reCalc();" value="0" /></td></tr>
+    <?php foreach ($meals as $id => $meal) { ?>
+        <tr><th><?php echo $meal; ?></th>
+        <td><input type="text" class="form-control" name="<?php echo $meal; ?>" id="<?php echo $meal; ?>" value="0" onchange="reCalc(); "/></td></tr>
+    <?php } ?>
     <tr><th>Spaghetti</th><td>
         <input type="text" class="form-control" name="kids" id="kids" onchange="reCalc();" value="0" /></td></tr>
     <tr><th>Amount Due</th><td id="amtdue">$<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?></td></tr>
