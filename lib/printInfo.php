@@ -6,33 +6,30 @@ function print_info($INFO){
     //return;
     $receipt = "";
     $dts = 0;
-    foreach($INFO['meals'] as $mtype){
+    foreach ($INFO['meals'] as $mtype) {
         $receipt .= centerString("Dinner Choice")."\n";
-        switch(strtolower($mtype[0])){
-        case 'm':
-            $receipt .= printImage("images/meatbpp.bmp");
+        switch (strtolower($mtype)) {
+        case 'salmon':
+            $receipt .= printImage("images/s_bpp.bmp");
             $dts++;
             break;
-        case 'v':
-            $receipt .= printImage("images/vegbpp.bmp");
+        case 'chicken':
+            $receipt .= printImage("images/c_bpp.bmp");
             $dts++;
             break;
-        case 'n':
-            $receipt .= printImage("images/meatgf.bmp");
+        case 'tempeh':
+            $receipt .= printImage("images/v_bpp.bmp");
             $dts++;
             break;
-        case 'w':
-            $receipt .= printImage("images/veggf.bmp");
-            $dts++;
-            break;
-        case 'k':
-            $receipt .= printImage("images/kidsbpp.bmp");
+        case 'kid':
+            $receipt .= printImage("images/k_bpp.bmp");
             break;
         }
         $receipt .= centerString("Please place this ticket face up on the table")."\n";
         $receipt .= centerString("visible so the server knows your meal choice")."\n";
         $receipt .= cut();
     }
+    /*
     for ($i=0; $i<$dts*2;$i++){
         $receipt .= biggerFont(centerBig("Free Drink Ticket"))."\n\n";
         $receipt .= centerString("This drink is good for one designated soda, beer")."\n"; 
@@ -44,6 +41,7 @@ function print_info($INFO){
         $receipt .= normalFont();
         $receipt .= cut();
     }
+    */
 
     for($i=0;$i<2;$i++){
         $receipt .= centerString("Raffle Ticket - Your number is:")."\n\n";
@@ -52,16 +50,16 @@ function print_info($INFO){
         $receipt .= cut();
     }
 
+    /** Disabled; all pre-pay
     if (!isset($INFO['amt']) || $INFO['amt'] == 0){
-        /** Disabled; all pre-pay
         $receipt .= biggerFont(centerBig("PAID IN FULL"))."\n";
         $receipt .= cut();
-        */
     }
     else {
         $receipt .= biggerFont(centerBig(sprintf('AMOUNT DUE: $%.2f',$INFO['amt'])))."\n";
         $receipt .= cut();
     }
+    */
 
     writeLine($receipt);
 }
