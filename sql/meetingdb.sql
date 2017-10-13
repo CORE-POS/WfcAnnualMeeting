@@ -199,7 +199,6 @@ UNLOCK TABLES;
 /*!50001 DROP TABLE `arrivals`*/;
 /*!50001 DROP VIEW IF EXISTS `arrivals`*/;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `arrivals` AS select `t`.`typeDesc` AS `typeDesc`,sum((case when (`r`.`checked_in` = 0) then 1 else 0 end)) AS `pending`,sum((case when (`r`.`checked_in` = 1) then 1 else 0 end)) AS `arrived` from ((`regmeals` `m` left join `registrations` `r` on((`m`.`card_no` = `r`.`card_no`))) left join `mealtype` `t` on((`t`.`id` = `m`.`subtype`))) group by `t`.`typeDesc` */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
