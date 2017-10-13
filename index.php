@@ -26,7 +26,7 @@ if (isset($_REQUEST['cn'])) {
             }
         }
     } else {
-        $q = sprintf("SELECT CardNo,
+        $q = $dbc->prepare("SELECT CardNo,
                 LastName,
                 FirstName,
                 personNum,
@@ -35,10 +35,9 @@ if (isset($_REQUEST['cn'])) {
                     ELSE 'b alert-warning' END AS css
             FROM custdata AS c
                 LEFT JOIN registrations AS r ON c.CardNo=r.card_no
-            WHERE LastName LIKE '%s%%'
-            ORDER BY css, LastName,FirstName",
-            $dbc->escape($cn));
-        $r = $dbc->query($q);
+            WHERE LastName LIKE ?
+            ORDER BY css, LastName,FirstName");
+        $r = $dbc->execute($q, array('%' . $cn . '%'));
         if ($dbc->num_rows($r) > 0) {
             ob_start();
             ?>
@@ -46,7 +45,9 @@ if (isset($_REQUEST['cn'])) {
                 class="form-inline">
             <label>Multiple Matches</label>
             <select id="cn-select" class="form-control">
-            <?php while($w = $dbc->fetch_row($r)) {
+            <?php 
+                $multipleLimit = 0;
+                while($w = $dbc->fetch_row($r)) {
                 if ($w['personNum'] == 1) {
                     echo '<strong>';
                 }
@@ -57,6 +58,8 @@ if (isset($_REQUEST['cn'])) {
                 if ($w['personNum'] == 1) {
                     echo '</strong>';
                 }
+                $multipleLimit++;
+                if ($multipleLimit > 50) break;
             } ?>
             </select>
             <button type="submit" class="btn btn-default">Proceed</button>
@@ -64,7 +67,7 @@ if (isset($_REQUEST['cn'])) {
             <?php
             $json['html'] = ob_get_clean();
         } else {
-            $json['html'] = $q;
+            $json['html'] = '<div class="alert alert-danger">No match found</div>';
         }
     }
     if ($json['member'] === false && $json['html'] === '') {
