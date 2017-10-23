@@ -13,8 +13,16 @@ function print_info($INFO){
             $receipt .= printImage("images/s_bpp.bmp");
             $dts++;
             break;
+        case 'salmonNoSauce':
+            $receipt .= printImage("images/s.bmp");
+            $dts++;
+            break;
         case 'chicken':
             $receipt .= printImage("images/c_bpp.bmp");
+            $dts++;
+            break;
+        case 'chickenNoSauce':
+            $receipt .= printImage("images/c.bmp");
             $dts++;
             break;
         case 'tempeh':

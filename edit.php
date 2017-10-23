@@ -76,6 +76,11 @@ if (isset($_REQUEST['checkin'])){
 
     $q = "UPDATE registrations SET checked_in=1 WHERE card_no=".$cn;
     $r = $dbc->query($q);
+    if ($cn == 9600) {
+        $pinfo['meals'] = array('chickenNoSauce');
+    } elseif ($cn == 17312) {
+        $pinfo['meals'] = array('salmonNoSauce', 'salmonNoSauce');
+    }
     print_info($pinfo);
     header("Location: index.php");
     exit;
