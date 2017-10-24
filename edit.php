@@ -73,6 +73,9 @@ if (isset($_REQUEST['checkin'])){
         $r = $dbc->query($q);
         $pinfo['meals'][] = 'kid';
     }
+    for ($i=0; $i<$_REQUEST['vdessert']; $i++) {
+        $pinfo['meals'][] = 'vdessert';
+    }
 
     $q = "UPDATE registrations SET checked_in=1 WHERE card_no=".$cn;
     $r = $dbc->query($q);
@@ -161,6 +164,8 @@ function reCalc(){
     <?php } ?>
     <tr><th>Spaghetti</th><td>
         <input type="text" class="form-control" name="kids" id="kids" onchange="reCalc();" value="0" /></td></tr>
+    <tr><th>Vegan Dessert</th><td>
+        <input type="text" class="form-control" name="vdessert" value="0" /></td></tr>
     <tr><th>Amount Due</th><td id="amtdue">$<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?></td></tr>
     <input type="hidden" id="basedue" name="basedue" value="<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?>" />
     <input type="hidden" id="ttldue" name="ttldue" value="<?php echo ($regW['paid']==1?0:20*$regW['guest_count']); ?>" />

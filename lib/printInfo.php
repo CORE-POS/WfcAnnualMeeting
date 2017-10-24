@@ -29,6 +29,9 @@ function print_info($INFO){
             $receipt .= printImage("images/v_bpp.bmp");
             $dts++;
             break;
+        case 'vdessert':
+            $receipt .= printImage("images/v.bmp");
+            break;
         case 'kid':
             $receipt .= printImage("images/k_bpp.bmp");
             break;
