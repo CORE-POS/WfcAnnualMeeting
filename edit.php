@@ -40,7 +40,7 @@ if (isset($_REQUEST['checkin'])){
         $r = $dbc->query($q);
         $reqMeal = $_REQUEST['am'][$i];
         if (isset($meals[$reqMeal])) {
-            $pinfo['meals'][] = strtolower($meals[$reqMeals]);
+            $pinfo['meals'][] = strtolower($meals[$reqMeal]);
         } else {
             $pinfo['meals'][] = strtolower($defaultMeal);
         }

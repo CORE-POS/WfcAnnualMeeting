@@ -14,7 +14,7 @@ function print_info($INFO){
             $dts++;
             break;
         case 'salmonnosauce':
-            $receipt .= printImage("images/s.bmp");
+            $receipt .= printImage("images/meatbpp.bmp");
             $dts++;
             break;
         case 'chicken':
@@ -30,7 +30,7 @@ function print_info($INFO){
             $dts++;
             break;
         case 'vdessert':
-            $receipt .= printImage("images/v.bmp");
+            $receipt .= printImage("images/v_bpp2.bmp");
             break;
         case 'kid':
             $receipt .= printImage("images/k_bpp.bmp");
